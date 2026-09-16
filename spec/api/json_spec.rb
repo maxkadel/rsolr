@@ -70,8 +70,8 @@ RSpec.describe RSolr::JSON do
 
         request = generator.add(data, boost: 1)
 
-        expect(request).to match /"add":{"boost":1,"doc":{"id":"1","name":"matt"}}/
-        expect(request).to match /"add":{"boost":1,"doc":{"id":"2","name":"sam"}}/
+        expect(request).to match(/"add":{"boost":1,"doc":{"id":"1","name":"matt"}}/)
+        expect(request).to match(/"add":{"boost":1,"doc":{"id":"2","name":"sam"}}/)
       end
     end
 
