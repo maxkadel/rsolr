@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'base64'
 
 RSpec.describe RSolr::Client do
   let(:connection) { nil }
@@ -11,6 +12,32 @@ RSpec.describe RSolr::Client do
 
   let(:client_with_proxy) do
     RSolr::Client.new connection, connection_options.merge(proxy: 'http://localhost:8080')
+  end
+
+  context "basic auth" do
+    let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+
+    def authorization_header_for(url:, **client_opts)
+      seen_header = nil
+      stubs.get('/solr/admin/ping') do |env|
+        seen_header = env.request_headers['Authorization']
+        [200, {}, '']
+      end
+
+      RSolr::Client.new(nil, { url: url, adapter: [:test, stubs] }.merge(client_opts)).get('admin/ping')
+      stubs.verify_stubbed_calls
+      seen_header
+    end
+
+    it "sends credentials embedded in the URL as a Basic Authorization header" do
+      header = authorization_header_for(url: "http://someuser:somepass@localhost:9999/solr")
+      expect(header).to eq("Basic #{Base64.strict_encode64('someuser:somepass')}")
+    end
+
+    it "sends no Authorization header when the URL has no credentials" do
+      header = authorization_header_for(url: "http://localhost:9999/solr")
+      expect(header).to be_nil
+    end
   end
 
   context "initialize" do
