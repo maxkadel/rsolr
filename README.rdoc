@@ -41,6 +41,26 @@ The +:request+ attribute contains the original request context. You can use this
 
 The +:response+ attribute contains the original response. This object contains the +:status+, +:body+ and +:headers+ keys.
 
+== Basic Auth
+
+Credentials can be embedded in the URL:
+
+  solr = RSolr.connect :url => 'http://user:pass@solrserver.com'
+
+or passed explicitly via +:basic_auth+, which is useful if you'd rather keep
+secrets out of a URL string (logs, error messages, etc. tend to capture URLs
+more casually than headers):
+
+  solr = RSolr.connect :url => 'http://solrserver.com', :basic_auth => { :user => 'user', :password => 'pass' }
+
++:basic_auth+ accepts string or symbol keys (<tt>'user'</tt>/<tt>'password'</tt>
+work the same as <tt>:user</tt>/<tt>:password</tt>), so a hash loaded straight
+from YAML config works without re-symbolizing it yourself.
+
+If both are given, +:basic_auth+ wins. Either way, this only protects the
+credential from casual logging - it doesn't encrypt anything in transit, so
+use +https://+ if the connection isn't otherwise trusted (e.g. firewalled).
+
 == Request formats
 
 By default, RSolr uses the Solr JSON command format for all requests.
