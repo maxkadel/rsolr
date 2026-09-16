@@ -3,9 +3,21 @@
 require 'json'
 require 'faraday'
 require 'uri'
+require 'base64'
 
 class RSolr::Client
   DEFAULT_URL = 'http://127.0.0.1:8983/solr/'
+
+  # HTTP Basic Auth credentials, and how to render them as an Authorization header.
+  BasicAuth = Struct.new(:user, :password) do
+    def present?
+      !!(user && password)
+    end
+
+    def header_value
+      "Basic #{Base64.strict_encode64("#{user}:#{password}")}"
+    end
+  end
 
   class << self
     def default_wt
@@ -328,16 +340,7 @@ class RSolr::Client
       conn_opts[:request][:params_encoder] = Faraday::FlatParamsEncoder
 
       Faraday.new(conn_opts) do |conn|
-        if uri.user && uri.password
-          case Faraday::VERSION
-          when /^0/
-            conn.basic_auth uri.user, uri.password
-          when /^1/
-            conn.request :basic_auth, uri.user, uri.password
-          else
-            conn.request :authorization, :basic_auth, uri.user, uri.password
-          end
-        end
+        conn.headers['Authorization'] = basic_auth.header_value if basic_auth.present?
 
         conn.response :raise_error
         conn.request :retry, max: options[:retry_after_limit], interval: 0.05,
@@ -349,6 +352,15 @@ class RSolr::Client
   end
 
   protected
+
+  def basic_auth
+    if options[:basic_auth]
+      auth = options[:basic_auth]
+      BasicAuth.new(auth[:user] || auth['user'], auth[:password] || auth['password'])
+    else
+      BasicAuth.new(uri.user, uri.password)
+    end
+  end
 
   # converts the method name for the solr request handler path.
   def method_missing name, *args

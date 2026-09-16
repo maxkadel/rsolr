@@ -38,6 +38,30 @@ RSpec.describe RSolr::Client do
       header = authorization_header_for(url: "http://localhost:9999/solr")
       expect(header).to be_nil
     end
+
+    it "sends credentials given via the basic_auth: option" do
+      header = authorization_header_for(
+        url: "http://localhost:9999/solr",
+        basic_auth: { user: 'optuser', password: 'optpass' }
+      )
+      expect(header).to eq("Basic #{Base64.strict_encode64('optuser:optpass')}")
+    end
+
+    it "prefers the basic_auth: option over credentials embedded in the URL" do
+      header = authorization_header_for(
+        url: "http://urluser:urlpass@localhost:9999/solr",
+        basic_auth: { user: 'optuser', password: 'optpass' }
+      )
+      expect(header).to eq("Basic #{Base64.strict_encode64('optuser:optpass')}")
+    end
+
+    it "accepts a basic_auth: option with string keys, as loaded from YAML" do
+      header = authorization_header_for(
+        url: "http://localhost:9999/solr",
+        basic_auth: { 'user' => 'optuser', 'password' => 'optpass' }
+      )
+      expect(header).to eq("Basic #{Base64.strict_encode64('optuser:optpass')}")
+    end
   end
 
   context "initialize" do
