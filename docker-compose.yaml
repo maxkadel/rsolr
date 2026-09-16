@@ -6,3 +6,17 @@ services:
     volumes:
       - ./spec/fixtures/basic_configs:/basic_configs_config/conf:ro
     command: ["solr-precreate", "basic_configs", "/basic_configs_config"]
+
+  solr_auth:
+    image: solr:9
+    ports:
+      - "8984:8983"
+    volumes:
+      - ./spec/fixtures/basic_configs:/basic_configs_config/conf:ro
+      - ./spec/fixtures/security/security.json:/security-fixture/security.json:ro
+    entrypoint: ["bash", "-c"]
+    command:
+      - |
+        mkdir -p /var/solr/data &&
+        cp /security-fixture/security.json /var/solr/data/security.json &&
+        exec /opt/solr/docker/scripts/solr-precreate basic_configs /basic_configs_config
