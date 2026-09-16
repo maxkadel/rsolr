@@ -193,6 +193,12 @@ The default response format is Ruby. When the +:wt+ param is set to +:ruby+, the
 * {Solr}[http://lucene.apache.org/solr/] -- The Apache Solr project
 * {solr-ruby}[http://wiki.apache.org/solr/solr-ruby] -- The original Solr Ruby Gem!
 
+== Running the tests
+
+The integration specs (<tt>spec/integration</tt>) need a Solr instance;
+run <tt>docker compose up -d</tt> before <tt>bundle exec rspec</tt> or
+<tt>bundle exec rake</tt>.
+
 == Note on Patches/Pull Requests
 * Fork the project.
 * Make your feature addition or bug fix.

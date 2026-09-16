@@ -1,0 +1,8 @@
+services:
+  solr:
+    image: solr:9
+    ports:
+      - "8983:8983"
+    volumes:
+      - ./spec/fixtures/basic_configs:/basic_configs_config/conf:ro
+    command: ["solr-precreate", "basic_configs", "/basic_configs_config"]
