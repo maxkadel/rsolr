@@ -1,0 +1,16 @@
+{
+  "authentication": {
+    "blockUnknown": true,
+    "class": "solr.BasicAuthPlugin",
+    "credentials": {
+      "rsolr": "yBxMT8Js4iwRuqWHqW7eQcF1iNDaSbI8ZQtQc5nZyYg= 57WDp52Vgp2LrB9BT5/iFnGY7txUMdTlyM9rVT9XwcA="
+    },
+    "realm": "rsolr test",
+    "forwardCredentials": false
+  },
+  "authorization": {
+    "class": "solr.RuleBasedAuthorizationPlugin",
+    "permissions": [{ "name": "security-edit", "role": "admin" }],
+    "user-role": { "rsolr": "admin" }
+  }
+}

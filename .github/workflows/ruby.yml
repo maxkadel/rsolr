@@ -23,6 +23,8 @@ jobs:
         run: bundle install
         env:
           FARADAY_VERSION: ${{ matrix.faraday}}
+      - name: Start Solr
+        run: docker compose up -d --wait --wait-timeout 60
       - name: Run tests
         run: bundle exec rake
         env:
