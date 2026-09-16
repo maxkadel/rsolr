@@ -24,11 +24,7 @@ jobs:
         env:
           FARADAY_VERSION: ${{ matrix.faraday}}
       - name: Start Solr
-        run: docker compose up -d
-      - name: Wait for Solr
-        run: |
-          timeout 60 bash -c 'until curl -sf http://localhost:8983/solr/basic_configs/admin/ping; do sleep 2; done'
-          timeout 60 bash -c 'until curl -sf -u rsolr:RSolrTest123 http://localhost:8984/solr/basic_configs/admin/ping; do sleep 2; done'
+        run: docker compose up -d --wait --wait-timeout 60
       - name: Run tests
         run: bundle exec rake
         env:

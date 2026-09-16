@@ -6,6 +6,11 @@ services:
     volumes:
       - ./spec/fixtures/basic_configs:/basic_configs_config/conf:ro
     command: ["solr-precreate", "basic_configs", "/basic_configs_config"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8983/solr/basic_configs/admin/ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
 
   solr_auth:
     image: solr:9
@@ -20,3 +25,8 @@ services:
         mkdir -p /var/solr/data &&
         cp /security-fixture/security.json /var/solr/data/security.json &&
         exec /opt/solr/docker/scripts/solr-precreate basic_configs /basic_configs_config
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "-u", "rsolr:RSolrTest123", "http://localhost:8983/solr/basic_configs/admin/ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
