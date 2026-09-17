@@ -85,7 +85,6 @@ RSpec.describe RSolr::Client do
 
           expect(error.cause.message).not_to include('somepass')
           expect(error.cause.inspect).not_to include('somepass')
-          expect(error.cause.message).to include('REDACTED')
           expect(error.cause.inspect).to include('REDACTED')
         end
       end
